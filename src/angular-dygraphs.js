@@ -5,8 +5,10 @@
  *
  * License: MIT
  */
-angular.module("angular-dygraphs", [])
-    .directive('ngDygraphs', function ($window) {
+angular.module("angular-dygraphs", [
+    'ngSanitize'
+])
+    .directive('ngDygraphs', function ($window, $sce) {
         return {
             restrict: 'E',
             scope: { // Isolate scope
@@ -14,51 +16,110 @@ angular.module("angular-dygraphs", [])
                 options: '=',
                 legend: '=?'
             },
-            template: "<div></div><div></div>",
+            template: '<div class="ng-dygraphs">' +                     // Outer div to hold the whole directive
+                '<div></div>' +                                         // Div for graph
+                '<div class="legend" ng-if="LegendEnabled">' +          // Div for legend
+                '<div class="series-container">' +
+                '<div ng-repeat="series in legendSeries" class="series">' +
+                '<a ng-click="selectSeries(series)">' +
+                '<span ng-bind-html="seriesLine(series)"></span>' +
+                '<span ng-style="seriesStyle(series)">{{series.label}}</span>' +
+                '</a>' +
+                '</div>' +                                              // Series Div
+                '</div>' +
+                '</div>' +                                              // Legend Div
+                '</div>',                                               // Outer div
             link: function (scope, element, attrs) {
-                var graph = new Dygraph(element.children()[0], scope.data, scope.options);
+                scope.LegendEnabled = true;
+
+                var parent = element.parent();
+                var mainDiv = element.children()[0];
+                var chartDiv = $(mainDiv).children()[0];
+                var legendDiv = $(mainDiv).children()[1];
+
+                var graph = new Dygraph(chartDiv, scope.data, scope.options);
                 scope.$watch("data", function () {
                     var options = scope.options;
-                    if(options === undefined) {
+                    if (options === undefined) {
                         options = {};
                     }
                     options.file = scope.data;
                     options.highlightCallback = scope.highlightCallback;
 
+                    if(scope.legend !== undefined) {
+                        options.labelsDivWidth = 0;
+                    }
                     graph.updateOptions(options);
                     graph.resetZoom();
+
+                    resize();
                 }, true);
 
-                /*       scope.highlightCallback = function (e, x, pts, row, seriesName) {
-                 var legend = $('div.graph div.legend span b span');
-                 legend.each(function () {
-                 var span_parent = $(this).parent().parent();
-                 var name = $(this).contents()[0].wholeText;
-                 var color = $(this).css('color');
+                scope.$watch("legend", function () {
+                    // Clear the legend
+                    var colors = graph.getColors();
+                    var labels = graph.getLabels();
 
-                 span_parent.contents().remove();
-                 $("<div></div>", {
-                 "style": "display: inline-block; " +
-                 "position: relative; " +
-                 "bottom: .5ex; " +
-                 "padding-left: 1em; " +
-                 "height: 1px; " +
-                 "border-bottom: 2px solid " + color + ";"
-                 }).appendTo(span_parent);
+                    scope.legendSeries = [];
 
-                 span_parent.append(" " + name);
-                 span_parent.css('font-weight', 'bold');
-                 span_parent.css('color', color);
-                 });
-                 };*/
+                    // If we want our own legend, then create it
+                    if (scope.legend !== undefined && scope.legend.series !== undefined) {
+                        var cnt = 0;
+                        for (var key in scope.legend.series) {
+                            var legendSeries = {};
 
-                var e = element.parent();
-                graph.resize(e.width(), e.height());
+                            legendSeries.color = colors[cnt];
+                            legendSeries.label = scope.legend.series[key].label;
+                            legendSeries.visible = true;
+                            legendSeries.column = cnt;
+
+                            scope.legendSeries.push(legendSeries);
+
+                            cnt++;
+                        }
+                    }
+
+                    resize();
+                });
+
+                scope.seriesLine = function (series) {
+                    return $sce.trustAsHtml('<svg height="14" width="20"><line x1="0" x2="16" y1="8" y2="8" stroke="' +
+                        series.color + '" stroke-width="3" /></svg>');
+                };
+
+                scope.seriesStyle = function(series) {
+                    if(series.visible) {
+                        return 'color:'+series.color;
+                    }
+                    return 'color:'+series.color;
+                };
+
+                scope.selectSeries = function(series) {
+                    console.log("Change series", series);
+                    series.visible = !series.visible;
+                    graph.setVisibility(series.column, series.visible);
+                };
+
+                resize();
+
                 var w = angular.element($window);
                 w.bind('resize', function () {
-                    graph.resize(e.width(), e.height());
-                    scope.$apply();
+                    resize();
                 });
+
+                function resize() {
+                    var maxWidth = 0;
+                    element.find('div.series').each(function(){
+                        var itemWidth = $(this).width();
+                        maxWidth = Math.max(maxWidth, itemWidth)
+                    });
+                    element.find('div.series').each(function(){
+                        $(this).width(maxWidth);
+                    });
+
+                    var legendHeight = element.find('div.legend').outerHeight(true);
+                    graph.resize(parent.width(), parent.height() - legendHeight);
+                }
             }
         };
     });

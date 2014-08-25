@@ -2,16 +2,31 @@
 // ng-dygraphs
 .ng-dygraphs {
   .legend {
-    margin:3px 8px;
-    border: 1px white solid;
+    width: auto;
+    margin: 3px 8px;
+    padding: 2px 5px;
+    border: 1px @legend-border-color solid;
     -webkit-border-radius: @border-radius-base;
     -moz-border-radius: @border-radius-base;
     -ms-border-radius: @border-radius-base;
     -o-border-radius: @border-radius-base;
 
-    .series {
-      width:250px;
-      display: inline-block;
+    .series-container {
+      text-align:center;
+
+      .series {
+        padding: 0px 10px;
+        display: inline-block;
+        float: center;
+
+        a {
+          text-decoration: none;
+        }
+
+        a:hover {
+          cursor: pointer;
+        }
+      }
     }
   }
 }
