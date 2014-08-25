@@ -38,6 +38,8 @@ angular.module("angular-dygraphs", [
                 var chartDiv = $(mainDiv).children()[0];
                 var legendDiv = $(mainDiv).children()[1];
 
+                var popover = element.find('.popover');
+
                 var graph = new Dygraph(chartDiv, scope.data, scope.options);
                 scope.$watch("data", function () {
                     var options = scope.options;
@@ -85,8 +87,6 @@ angular.module("angular-dygraphs", [
                 });
 
                 scope.highlightCallback = function (event, x, points, row, seriesName) {
-                    var popover = element.find('.popover');
-
                     var html = "<table>";
                     html += "<tr><th colspan='2'>" + x + "</th></tr>";
                     angular.forEach(points, function (point) {
@@ -103,6 +103,7 @@ angular.module("angular-dygraphs", [
 
                 scope.unhighlightCallback = function (event) {
                     console.log("Unhighlight", event);
+                    popover.hide();
                 };
 
                 scope.seriesLine = function (series) {
