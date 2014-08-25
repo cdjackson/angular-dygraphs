@@ -28,6 +28,7 @@ angular.module("angular-dygraphs", [
                 '</div>' +                                              // Series Div
                 '</div>' +
                 '</div>' +                                              // Legend Div
+                '<div style="width:100px;height:40px;" class="popover"></div>' +
                 '</div>',                                               // Outer div
             link: function (scope, element, attrs) {
                 scope.LegendEnabled = true;
@@ -45,8 +46,9 @@ angular.module("angular-dygraphs", [
                     }
                     options.file = scope.data;
                     options.highlightCallback = scope.highlightCallback;
+                    options.unhighlightCallback = scope.unhighlightCallback;
 
-                    if(scope.legend !== undefined) {
+                    if (scope.legend !== undefined) {
                         options.labelsDivWidth = 0;
                     }
                     graph.updateOptions(options);
@@ -82,19 +84,40 @@ angular.module("angular-dygraphs", [
                     resize();
                 });
 
+                scope.highlightCallback = function (event, x, points, row, seriesName) {
+                    var popover = element.find('.popover');
+
+                    var html = "<table>";
+                    html += "<tr><th colspan='2'>" + x + "</th></tr>";
+                    angular.forEach(points, function (point) {
+                        html += "<tr><td>" + point.name + "</td><td>" + point.yval + "</td></tr>";
+                    });
+                    html += "</table>";
+                    popover.html(html);
+                    var theHeight = 40;
+                    popover.show();
+                    popover.css({left: (event.x + 20) + 'px', top: (event.y - (theHeight / 2)) + 'px'});
+
+                    console.log("Highlight", event, x, points, row, seriesName);
+                };
+
+                scope.unhighlightCallback = function (event) {
+                    console.log("Unhighlight", event);
+                };
+
                 scope.seriesLine = function (series) {
                     return $sce.trustAsHtml('<svg height="14" width="20"><line x1="0" x2="16" y1="8" y2="8" stroke="' +
                         series.color + '" stroke-width="3" /></svg>');
                 };
 
-                scope.seriesStyle = function(series) {
-                    if(series.visible) {
-                        return 'color:'+series.color;
+                scope.seriesStyle = function (series) {
+                    if (series.visible) {
+                        return {color: series.color};
                     }
-                    return 'color:'+series.color;
+                    return {};
                 };
 
-                scope.selectSeries = function(series) {
+                scope.selectSeries = function (series) {
                     console.log("Change series", series);
                     series.visible = !series.visible;
                     graph.setVisibility(series.column, series.visible);
@@ -109,11 +132,11 @@ angular.module("angular-dygraphs", [
 
                 function resize() {
                     var maxWidth = 0;
-                    element.find('div.series').each(function(){
+                    element.find('div.series').each(function () {
                         var itemWidth = $(this).width();
                         maxWidth = Math.max(maxWidth, itemWidth)
                     });
-                    element.find('div.series').each(function(){
+                    element.find('div.series').each(function () {
                         $(this).width(maxWidth);
                     });
 

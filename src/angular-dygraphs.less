@@ -12,24 +12,69 @@
     -o-border-radius: @border-radius-base;
 
     .series-container {
-      text-align:center;
+      text-align: center;
 
       .series {
-        padding: 0px 10px;
+        padding: 0px 8px;
         display: inline-block;
         float: center;
 
         a {
           text-decoration: none;
+          color: @nav-disabled-link-color;
         }
 
         a:hover {
+          color: @nav-disabled-link-hover-color;
           cursor: pointer;
         }
       }
     }
   }
+
+  .popover {
+    position:fixed;
+    display:none;
+    width:auto;
+    background: @popover-bg;
+    border: 1px solid @popover-bg;
+
+    th {
+      color: red;
+      font-weight: bold;
+      text-align: center;
+      border-bottom: 1px solid #ffffff;
+    }
+    td {
+      padding: 2px 5px;
+    }
+  }
+  .popover:after, .popover:before {
+    right: 100%;
+    top: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+  }
+  .popover:after {
+    border-color: rgba(0, 0, 0, 0);
+    border-right-color: @popover-bg;
+    border-width: @popover-arrow-width;
+    margin-top: -@popover-arrow-width;
+  }
+  .popover:before {
+    border-color: rgba(0, 0, 0, 0);
+    border-right-color: @popover-bg;
+    border-width: @popover-arrow-outer-width;
+    margin-top: -@popover-arrow-outer-width;
+  }
 }
+
+
+
 
 //
 // DyGraphs customisation
