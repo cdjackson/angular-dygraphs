@@ -20,6 +20,8 @@
     "tests"
   ],
   "devDependencies": {
-    "dygraphs": "~1.0.1"
+    "dygraphs": "~1.0.1",
+    "angular-sanitize": "~1.2.23",
+    "jquery": "~2.1.1"
   }
 }

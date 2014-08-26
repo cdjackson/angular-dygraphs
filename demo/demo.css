@@ -1,0 +1,74 @@
+.ng-dygraphs .legend {
+    width: auto;
+    margin: 3px 8px;
+    padding: 2px 5px;
+    border: 1px #000000 solid;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -o-border-radius: 5px;
+}
+.ng-dygraphs .legend .series-container {
+    text-align: center;
+}
+.ng-dygraphs .legend .series-container .series {
+    padding: 0px 8px;
+    display: inline-block;
+    float: center;
+}
+.ng-dygraphs .legend .series-container .series a {
+    text-decoration: none;
+    color: #000000;
+}
+.ng-dygraphs .legend .series-container .series a:hover {
+    color: #000000;
+    cursor: pointer;
+}
+.ng-dygraphs .popover {
+    position: fixed;
+    display: none;
+    width: auto;
+    background: #808080;
+    border: 1px solid #808080;
+}
+.ng-dygraphs .popover th {
+    color: red;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 1px solid #ffffff;
+}
+.ng-dygraphs .popover td {
+    color: blue;
+    white-space: nowrap;
+    padding: 2px 5px;
+}
+.ng-dygraphs .popover:after,
+.ng-dygraphs .popover:before {
+    right: 100%;
+    top: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+.ng-dygraphs .popover:after {
+    border-color: rgba(0, 0, 0, 0);
+    border-right-color: #808080;
+    border-width: 10;
+    margin-top: -10;
+}
+.ng-dygraphs .popover:before {
+    border-color: rgba(0, 0, 0, 0);
+    border-right-color: #808080;
+    border-width: 11;
+    margin-top: -11;
+}
+.dygraph-axis-label {
+    color: black;
+    font-size: 12;
+}
+.dygraph-legend {
+    background-color: #ffffff !important;
+}

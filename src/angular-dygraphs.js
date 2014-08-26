@@ -64,20 +64,17 @@ angular.module("angular-dygraphs", [
                     var colors = graph.getColors();
                     var labels = graph.getLabels();
 
-                    scope.legendSeries = [];
+                    scope.legendSeries = {};
 
                     // If we want our own legend, then create it
                     if (scope.legend !== undefined && scope.legend.series !== undefined) {
                         var cnt = 0;
                         for (var key in scope.legend.series) {
-                            var legendSeries = {};
-
-                            legendSeries.color = colors[cnt];
-                            legendSeries.label = scope.legend.series[key].label;
-                            legendSeries.visible = true;
-                            legendSeries.column = cnt;
-
-                            scope.legendSeries.push(legendSeries);
+                            scope.legendSeries[key] = {};
+                            scope.legendSeries[key].color = colors[cnt];
+                            scope.legendSeries[key].label = scope.legend.series[key].label;
+                            scope.legendSeries[key].visible = true;
+                            scope.legendSeries[key].column = cnt;
 
                             cnt++;
                         }
@@ -90,13 +87,22 @@ angular.module("angular-dygraphs", [
                     var html = "<table>";
                     html += "<tr><th colspan='2'>" + x + "</th></tr>";
                     angular.forEach(points, function (point) {
-                        html += "<tr><td>" + point.name + "</td><td>" + point.yval + "</td></tr>";
+                        var label;
+                        if(scope.legendSeries[point.name] !== undefined) {
+                            label = scope.legendSeries[point.name].label;
+                        }
+                        else {
+                            label = point.name;
+                        }
+                        html += "<tr><td>" + label + "</td><td>" + point.yval + "</td></tr>";
                     });
                     html += "</table>";
                     popover.html(html);
-                    var theHeight = 40;
+                    var table = popover.find('table');
+                    var width = table.width();
+                    var height = table.height();
                     popover.show();
-                    popover.css({left: (event.x + 20) + 'px', top: (event.y - (theHeight / 2)) + 'px'});
+                    popover.css({left: (event.x + 20) + 'px', top: (event.y - (height / 2)) + 'px', width: width, height:height});
 
                     console.log("Highlight", event, x, points, row, seriesName);
                 };
