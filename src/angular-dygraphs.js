@@ -152,11 +152,11 @@ angular.module("angular-dygraphs", [
                         $(this).width(maxWidth);
                     });
 
-                    var legendHeight = element.find('div.legend').outerHeight();
+                    var legendHeight = element.find('div.legend').outerHeight(true);
                     console.log("Heights", legendHeight, parent.height(), parent.outerHeight(true),
                         $(mainDiv).outerHeight(), element.height(), $(legendDiv).height(),
                         $(legendDiv).outerHeight(true));
-                    graph.resize(parent.width(), parent.height() - legendHeight - 3);
+                    graph.resize(parent.width(), parent.height() - legendHeight);
                 }
             }
         };
