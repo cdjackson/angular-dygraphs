@@ -17,7 +17,7 @@ angular.module("angular-dygraphs", [
                 legend: '=?'
             },
             template: '<div class="ng-dygraphs">' +                     // Outer div to hold the whole directive
-                '<div></div>' +                                         // Div for graph
+                '<div class="graph"></div>' +                           // Div for graph
                 '<div class="legend" ng-if="LegendEnabled">' +          // Div for legend
                 '<div class="series-container">' +
                 '<div ng-repeat="series in legendSeries" class="series">' +
@@ -66,6 +66,10 @@ angular.module("angular-dygraphs", [
 
                     scope.legendSeries = {};
 
+                    if (scope.legend.dateFormat === undefined) {
+                        scope.legend.dateFormat = 'MMMM Do YYYY, h:mm:ss a';
+                    }
+
                     // If we want our own legend, then create it
                     if (scope.legend !== undefined && scope.legend.series !== undefined) {
                         var cnt = 0;
@@ -85,16 +89,19 @@ angular.module("angular-dygraphs", [
 
                 scope.highlightCallback = function (event, x, points, row, seriesName) {
                     var html = "<table>";
-                    html += "<tr><th colspan='2'>" + x + "</th></tr>";
+                    html += "<tr><th colspan='2'>" + moment(x).format(scope.legend.dateFormat) + "</th></tr>";
                     angular.forEach(points, function (point) {
                         var label;
-                        if(scope.legendSeries[point.name] !== undefined) {
+                        var color;
+                        if (scope.legendSeries[point.name] !== undefined) {
                             label = scope.legendSeries[point.name].label;
+                            color = "style='color:" + scope.legendSeries[point.name].color + ";'";
                         }
                         else {
                             label = point.name;
+                            color = "";
                         }
-                        html += "<tr><td>" + label + "</td><td>" + point.yval + "</td></tr>";
+                        html += "<tr " + color + "><td>" + label + "</td><td>" + point.yval + "</td></tr>";
                     });
                     html += "</table>";
                     popover.html(html);
@@ -102,13 +109,11 @@ angular.module("angular-dygraphs", [
                     var width = table.width();
                     var height = table.height();
                     popover.show();
-                    popover.css({left: (event.x + 20) + 'px', top: (event.y - (height / 2)) + 'px', width: width, height:height});
-
-                    console.log("Highlight", event, x, points, row, seriesName);
+                    popover.css({left: (event.x + 20) + 'px', top: (event.y - (height / 2)) +
+                        'px', width: width, height: height});
                 };
 
                 scope.unhighlightCallback = function (event) {
-                    console.log("Unhighlight", event);
                     popover.hide();
                 };
 
@@ -147,8 +152,11 @@ angular.module("angular-dygraphs", [
                         $(this).width(maxWidth);
                     });
 
-                    var legendHeight = element.find('div.legend').outerHeight(true);
-                    graph.resize(parent.width(), parent.height() - legendHeight);
+                    var legendHeight = element.find('div.legend').outerHeight();
+                    console.log("Heights", legendHeight, parent.height(), parent.outerHeight(true),
+                        $(mainDiv).outerHeight(), element.height(), $(legendDiv).height(),
+                        $(legendDiv).outerHeight(true));
+                    graph.resize(parent.width(), parent.height() - legendHeight - 3);
                 }
             }
         };
