@@ -88,8 +88,15 @@ angular.module("angular-dygraphs", [
                 });
 
                 scope.highlightCallback = function (event, x, points, row, seriesName) {
-                    var html = "<table>";
-                    html += "<tr><th colspan='2'>" + moment(x).format(scope.legend.dateFormat) + "</th></tr>";
+                    var html = "<table><tr><th colspan='2'>";
+                    if(typeof moment === "function") {
+                        html += moment(x).format(scope.legend.dateFormat);
+                    }
+                    else {
+                        html += x;
+                    }
+                    html += "</th></tr>";
+
                     angular.forEach(points, function (point) {
                         var label;
                         var color;
