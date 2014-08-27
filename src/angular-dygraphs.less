@@ -33,13 +33,14 @@
   }
 
   .popover {
-    position:fixed;
-    display:none;
-    width:auto;
+    position: fixed;
+    display: none;
+    width: auto;
     background: @popover-bg;
     border: 1px solid @popover-bg;
-    opacity:.80;
+    opacity: .80;
 
+    padding: 2px;
     th {
       font-weight: bold;
       text-align: center;
@@ -50,33 +51,33 @@
       white-space: nowrap;
       padding: 2px 5px;
     }
+
   }
-  .popover:after, .popover:before {
-    right: 100%;
-    top: 50%;
-    border: solid transparent;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none;
-  }
-  .popover:after {
-    border-color: rgba(0, 0, 0, 0);
-    border-right-color: @popover-bg;
-    border-width: @popover-arrow-width;
-    margin-top: -@popover-arrow-width;
-  }
-  .popover:before {
-    border-color: rgba(0, 0, 0, 0);
-    border-right-color: @popover-bg;
-    border-width: @popover-arrow-outer-width;
-    margin-top: -@popover-arrow-outer-width;
+  .left {
+    .popover:after, .popover:before {
+      right: 100%;
+      top: 50%;
+      border: solid transparent;
+      content: " ";
+      height: 0;
+      width: 0;
+      position: absolute;
+      pointer-events: none;
+    }
+    .popover:after {
+      border-color: rgba(0, 0, 0, 0);
+      border-right-color: @popover-bg;
+      border-width: @popover-arrow-width;
+      margin-top: -@popover-arrow-width;
+    }
+    .popover:before {
+      border-color: rgba(0, 0, 0, 0);
+      border-right-color: @popover-bg;
+      border-width: @popover-arrow-outer-width;
+      margin-top: -@popover-arrow-outer-width;
+    }
   }
 }
-
-
-
 
 //
 // DyGraphs customisation

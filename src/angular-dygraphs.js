@@ -37,8 +37,9 @@ angular.module("angular-dygraphs", [
                 var mainDiv = element.children()[0];
                 var chartDiv = $(mainDiv).children()[0];
                 var legendDiv = $(mainDiv).children()[1];
-
                 var popover = element.find('.popover');
+
+                var popoverPos = false;
 
                 var graph = new Dygraph(chartDiv, scope.data, scope.options);
                 scope.$watch("data", function () {
@@ -112,12 +113,26 @@ angular.module("angular-dygraphs", [
                     });
                     html += "</table>";
                     popover.html(html);
-                    var table = popover.find('table');
-                    var width = table.width();
-                    var height = table.height();
                     popover.show();
-                    popover.css({left: (event.x + 20) + 'px', top: (event.y - (height / 2)) +
-                        'px', width: width, height: height});
+                    var table = popover.find('table');
+                    var width = table.outerWidth(true);
+                    var height = table.outerHeight(true);
+                    if(points[0].x <0.4) {
+                        popoverPos = false;
+                    }
+                    else if(points[0].x > 0.6) {
+                        popoverPos = true;
+                    }
+                    var x;
+                    if(popoverPos == true) {
+                        x = event.x - width - 20;
+                    }
+                    else {
+                        x = event.x + 20;
+                    }
+                    popover.css({left: x + 'px', top: (event.y - (height / 2)) + 'px'});
+                    popover.width(width);
+                    popover.height(height);
                 };
 
                 scope.unhighlightCallback = function (event) {
