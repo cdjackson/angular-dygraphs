@@ -39,6 +39,9 @@ angular.module("angular-dygraphs", [
                 var legendDiv = $(mainDiv).children()[1];
                 var popover = element.find('.popover');
 
+                var popoverWidth = 0;
+                var popoverHeight = 0;
+                var chartArea;
                 var popoverPos = false;
 
                 var graph = new Dygraph(chartDiv, scope.data, scope.options);
@@ -78,6 +81,7 @@ angular.module("angular-dygraphs", [
                             scope.legendSeries[key] = {};
                             scope.legendSeries[key].color = colors[cnt];
                             scope.legendSeries[key].label = scope.legend.series[key].label;
+                            scope.legendSeries[key].format = scope.legend.series[key].format;
                             scope.legendSeries[key].visible = true;
                             scope.legendSeries[key].column = cnt;
 
@@ -88,9 +92,10 @@ angular.module("angular-dygraphs", [
                     resize();
                 });
 
-                scope.highlightCallback = function (event, x, points, row, seriesName) {
+                scope.highlightCallback = function (event, x, points, row) {
+                    console.log(event, x, points, row);
                     var html = "<table><tr><th colspan='2'>";
-                    if(typeof moment === "function") {
+                    if (typeof moment === "function") {
                         html += moment(x).format(scope.legend.dateFormat);
                     }
                     else {
@@ -99,8 +104,9 @@ angular.module("angular-dygraphs", [
                     html += "</th></tr>";
 
                     angular.forEach(points, function (point) {
-                        var label;
                         var color;
+                        var label;
+                        var value;
                         if (scope.legendSeries[point.name] !== undefined) {
                             label = scope.legendSeries[point.name].label;
                             color = "style='color:" + scope.legendSeries[point.name].color + ";'";
@@ -109,33 +115,56 @@ angular.module("angular-dygraphs", [
                             label = point.name;
                             color = "";
                         }
-                        html += "<tr " + color + "><td>" + label + "</td><td>" + point.yval + "</td></tr>";
+                        if(scope.legendSeries[point.name].format) {
+                            value = point.yval.toFixed(scope.legendSeries[point.name].format);
+                        }
+                        else {
+                            value = point.yval;
+                        }
+                        html += "<tr " + color + "><td>" + label + "</td>" + "<td>" + value + "</td></tr>";
                     });
                     html += "</table>";
                     popover.html(html);
                     popover.show();
                     var table = popover.find('table');
-                    var width = table.outerWidth(true);
-                    var height = table.outerHeight(true);
-                    if(points[0].x <0.4) {
+                    popoverWidth = table.outerWidth(true);
+                    popoverHeight = table.outerHeight(true);
+
+                    // Provide some hysterises to the popup position to stop it flicking back and forward
+                    if (points[0].x < 0.4) {
                         popoverPos = false;
                     }
-                    else if(points[0].x > 0.6) {
+                    else if (points[0].x > 0.6) {
                         popoverPos = true;
                     }
                     var x;
-                    if(popoverPos == true) {
-                        x = event.x - width - 20;
+                    if (popoverPos == true) {
+                        x = event.x - popoverWidth - 20;
                     }
                     else {
                         x = event.x + 20;
                     }
-                    popover.css({left: x + 'px', top: (event.y - (height / 2)) + 'px'});
-                    popover.width(width);
-                    popover.height(height);
+                    popover.width(popoverWidth);
+                    popover.height(popoverHeight);
+                    popover.animate({left: x + 'px', top: (event.y - (popoverHeight / 2)) + 'px'}, 20);
                 };
 
-                scope.unhighlightCallback = function (event) {
+                scope.unhighlightCallback = function (event, a, b) {
+                    // Check if the cursor is still within the chart area
+                    // If so, ignore this event.
+                    // This stops flickering if we get an even when the mouse covers the popover
+                    if(event.x > chartArea.left && event.x < chartArea.right && event.y > chartArea.top && event.y < chartArea.bottom) {
+                        var x;
+                        if (popoverPos == true) {
+                            x = event.x - popoverWidth - 20;
+                        }
+                        else {
+                            x = event.x + 20;
+                        }
+                        popover.animate({left: x + 'px'}, 10);
+                        return;
+                    }
+                    console.log(event, a, b);
                     popover.hide();
                 };
 
@@ -179,6 +208,10 @@ angular.module("angular-dygraphs", [
                         $(mainDiv).outerHeight(), element.height(), $(legendDiv).height(),
                         $(legendDiv).outerHeight(true));
                     graph.resize(parent.width(), parent.height() - legendHeight);
+                    chartArea = $(chartDiv).offset();
+                    chartArea.bottom = chartArea.top + parent.height() - legendHeight;
+                    chartArea.right = chartArea.left + parent.width();
+                    console.log("Position",chartArea);
                 }
             }
         };
