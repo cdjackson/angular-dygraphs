@@ -19,16 +19,16 @@ angular.module("angular-dygraphs", [
             template: '<div class="ng-dygraphs">' +                     // Outer div to hold the whole directive
                 '<div class="graph"></div>' +                           // Div for graph
                 '<div class="legend" ng-if="LegendEnabled">' +          // Div for legend
-                '<div class="series-container">' +
+                '<div class="series-container">' +                      // Div for series
                 '<div ng-repeat="series in legendSeries" class="series">' +
                 '<a ng-click="selectSeries(series)">' +
                 '<span ng-bind-html="seriesLine(series)"></span>' +
                 '<span ng-style="seriesStyle(series)">{{series.label}}</span>' +
                 '</a>' +
+                '</div>' +                                              // Repeat
                 '</div>' +                                              // Series Div
-                '</div>' +
                 '</div>' +                                              // Legend Div
-                '<div style="width:100px;height:40px;" class="popover"></div>' +
+                '<div class="dypopover"></div>' +
                 '</div>',                                               // Outer div
             link: function (scope, element, attrs) {
                 scope.LegendEnabled = true;
@@ -37,7 +37,7 @@ angular.module("angular-dygraphs", [
                 var mainDiv = element.children()[0];
                 var chartDiv = $(mainDiv).children()[0];
                 var legendDiv = $(mainDiv).children()[1];
-                var popover = element.find('.popover');
+                var popover = element.find('.dypopover');
 
                 var popoverWidth = 0;
                 var popoverHeight = 0;
@@ -139,27 +139,29 @@ angular.module("angular-dygraphs", [
                     }
                     var x;
                     if (popoverPos == true) {
-                        x = event.x - popoverWidth - 20;
+                        x = event.pageX - popoverWidth - 20;
                     }
                     else {
-                        x = event.x + 20;
+                        x = event.pageX + 20;
                     }
                     popover.width(popoverWidth);
                     popover.height(popoverHeight);
-                    popover.animate({left: x + 'px', top: (event.y - (popoverHeight / 2)) + 'px'}, 20);
+                    popover.animate({left: x + 'px', top: (event.pageY - (popoverHeight / 2)) + 'px'}, 20);
+
+                    console.log("Moving", {left: x + 'px', top: (event.pageY - (popoverHeight / 2)) + 'px'})
                 };
 
                 scope.unhighlightCallback = function (event, a, b) {
                     // Check if the cursor is still within the chart area
                     // If so, ignore this event.
                     // This stops flickering if we get an even when the mouse covers the popover
-                    if(event.x > chartArea.left && event.x < chartArea.right && event.y > chartArea.top && event.y < chartArea.bottom) {
+                    if(event.pageX > chartArea.left && event.pageX < chartArea.right && event.pageY > chartArea.top && event.pageY < chartArea.bottom) {
                         var x;
                         if (popoverPos == true) {
-                            x = event.x - popoverWidth - 20;
+                            x = event.pageX - popoverWidth - 20;
                         }
                         else {
-                            x = event.x + 20;
+                            x = event.pageX + 20;
                         }
                         popover.animate({left: x + 'px'}, 10);
                         return;
