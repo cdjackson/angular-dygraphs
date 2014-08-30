@@ -152,21 +152,6 @@ angular.module("angular-dygraphs", [
                 };
 
                 scope.unhighlightCallback = function (event, a, b) {
-                    // Check if the cursor is still within the chart area
-                    // If so, ignore this event.
-                    // This stops flickering if we get an even when the mouse covers the popover
-                    if(event.pageX > chartArea.left && event.pageX < chartArea.right && event.pageY > chartArea.top && event.pageY < chartArea.bottom) {
-                        var x;
-                        if (popoverPos == true) {
-                            x = event.pageX - popoverWidth - 20;
-                        }
-                        else {
-                            x = event.pageX + 20;
-                        }
-                        popover.animate({left: x + 'px'}, 10);
-                        return;
-                    }
-                    console.log(event, a, b);
                     popover.hide();
                 };
 
