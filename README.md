@@ -23,6 +23,8 @@ Installation
   bower install angular-dygraphs --save
 ``
 
+Then add `angular-dygraphs` as a module dependency.
+
 Note that currently this uses a number of dependancies -: jquery, moment and angular-sanitize. They should automatically be installed through bower.
 Feel free to remove them if there's a better way to perform the various functions - for my project I already use them, but I'm happy to accept a PR for alternative solutions if they provide the functionality.
 
