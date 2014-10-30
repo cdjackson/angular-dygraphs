@@ -53,6 +53,8 @@ angular.module("angular-dygraphs", [
                     options.file = scope.data;
                     options.highlightCallback = scope.highlightCallback;
                     options.unhighlightCallback = scope.unhighlightCallback;
+                    if(options.showPopover === undefined)
+                        options.showPopover = true;
 
                     if (scope.legend !== undefined) {
                         options.labelsDivWidth = 0;
@@ -70,7 +72,7 @@ angular.module("angular-dygraphs", [
 
                     scope.legendSeries = {};
 
-                    if (scope.legend.dateFormat === undefined) {
+                    if (scope.legend !== undefined && scope.legend.dateFormat === undefined) {
                         scope.legend.dateFormat = 'MMMM Do YYYY, h:mm:ss a';
                     }
 
@@ -93,6 +95,8 @@ angular.module("angular-dygraphs", [
                 });
 
                 scope.highlightCallback = function (event, x, points, row) {
+                    if(!scope.options.showPopover)
+                        return;
                     console.log(event, x, points, row);
                     var html = "<table><tr><th colspan='2'>";
                     if (typeof moment === "function") {
@@ -110,16 +114,16 @@ angular.module("angular-dygraphs", [
                         if (scope.legendSeries[point.name] !== undefined) {
                             label = scope.legendSeries[point.name].label;
                             color = "style='color:" + scope.legendSeries[point.name].color + ";'";
+                            if(scope.legendSeries[point.name].format) {
+                                value = point.yval.toFixed(scope.legendSeries[point.name].format);
+                            }
+                            else {
+                                value = point.yval;
+                            }
                         }
                         else {
                             label = point.name;
                             color = "";
-                        }
-                        if(scope.legendSeries[point.name].format) {
-                            value = point.yval.toFixed(scope.legendSeries[point.name].format);
-                        }
-                        else {
-                            value = point.yval;
                         }
                         html += "<tr " + color + "><td>" + label + "</td>" + "<td>" + value + "</td></tr>";
                     });
@@ -152,6 +156,25 @@ angular.module("angular-dygraphs", [
                 };
 
                 scope.unhighlightCallback = function (event, a, b) {
+                    if(!scope.options.showPopover){
+                        popover.hide();
+                        return;
+                    }
+                    // Check if the cursor is still within the chart area
+                    // If so, ignore this event.
+                    // This stops flickering if we get an even when the mouse covers the popover
+                    if(event.pageX > chartArea.left && event.pageX < chartArea.right && event.pageY > chartArea.top && event.pageY < chartArea.bottom) {
+                        var x;
+                        if (popoverPos == true) {
+                            x = event.pageX - popoverWidth - 20;
+                        }
+                        else {
+                            x = event.pageX + 20;
+                        }
+                        popover.animate({left: x + 'px'}, 10);
+                        return;
+                    }
+                    console.log(event, a, b);
                     popover.hide();
                 };
 
