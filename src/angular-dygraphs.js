@@ -8,7 +8,7 @@
 angular.module("angular-dygraphs", [
     'ngSanitize'
 ])
-    .directive('ngDygraphs', function ($window, $sce) {
+    .directive('ngDygraphs', ['$window', '$sce', function ($window, $sce) {
         return {
             restrict: 'E',
             scope: { // Isolate scope
@@ -225,4 +225,4 @@ angular.module("angular-dygraphs", [
                 }
             }
         };
-    });
+    }]);
