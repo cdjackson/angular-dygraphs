@@ -93,6 +93,11 @@ angular.module("angular-dygraphs", [
 
                     resize();
                 });
+                
+                scope.$watch("options", function(newOptions){
+                    graph.updateOptions(newOptions);
+                    resize();
+                }, true);
 
                 scope.highlightCallback = function (event, x, points, row) {
                     if(!scope.options.showPopover)
