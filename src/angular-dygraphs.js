@@ -102,7 +102,7 @@ angular.module("angular-dygraphs", [
                 scope.highlightCallback = function (event, x, points, row) {
                     if(!scope.options.showPopover)
                         return;
-                    console.log(event, x, points, row);
+                    //console.log(event, x, points, row);
                     var html = "<table><tr><th colspan='2'>";
                     if (typeof moment === "function" && scope.legend !== undefined) {
                         html += moment(x).format(scope.legend.dateFormat);
@@ -157,7 +157,7 @@ angular.module("angular-dygraphs", [
                     popover.height(popoverHeight);
                     popover.animate({left: x + 'px', top: (event.pageY - (popoverHeight / 2)) + 'px'}, 20);
 
-                    console.log("Moving", {left: x + 'px', top: (event.pageY - (popoverHeight / 2)) + 'px'})
+                    //console.log("Moving", {left: x + 'px', top: (event.pageY - (popoverHeight / 2)) + 'px'})
                 };
 
                 scope.unhighlightCallback = function (event, a, b) {
