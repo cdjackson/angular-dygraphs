@@ -219,14 +219,14 @@ angular.module("angular-dygraphs", [
                     });
 
                     var legendHeight = element.find('div.legend').outerHeight(true);
-                    console.log("Heights", legendHeight, parent.height(), parent.outerHeight(true),
+                    /*console.log("Heights", legendHeight, parent.height(), parent.outerHeight(true),
                         $(mainDiv).outerHeight(), element.height(), $(legendDiv).height(),
-                        $(legendDiv).outerHeight(true));
+                        $(legendDiv).outerHeight(true)); */
                     graph.resize(parent.width(), parent.height() - legendHeight);
                     chartArea = $(chartDiv).offset();
                     chartArea.bottom = chartArea.top + parent.height() - legendHeight;
                     chartArea.right = chartArea.left + parent.width();
-                    console.log("Position",chartArea);
+                    //console.log("Position",chartArea);
                 }
             }
         };
